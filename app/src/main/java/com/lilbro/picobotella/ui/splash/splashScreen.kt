@@ -1,4 +1,4 @@
-package com.lilbro.picobotella
+package com.lilbro.picobotella.ui.splash
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,13 +9,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.lilbro.picobotella.R
+import com.lilbro.picobotella.ui.home.MainActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreen : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash_screen)
@@ -33,6 +34,5 @@ class SplashScreen : AppCompatActivity()
                 startActivity(intent)
                 finish()
             }, 5000)
-        // 5000 is the delayed time in milliseconds.
     }
 }
