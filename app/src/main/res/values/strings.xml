@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">picoBotella</string>
+    <string name="app_name">Pico Botella</string>
+
+    <!-- US 6.0 - Retos -->
+    <string name="title_retos_screen">Retos</string>
+    <string name="hint_descripcion_reto">Descripción del reto</string>
+    <string name="title_agregar_reto">Agregar reto</string>
+    <string name="title_editar_reto">Editar reto</string>
+    <string name="title_eliminar_reto">Eliminar reto</string>
+    <string name="msg_confirmar_eliminar">¿Seguro que quieres eliminar este reto?</string>
+    <string name="btn_guardar">Guardar</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_eliminar">Eliminar</string>
+    <string name="error_descripcion_vacia">La descripción no puede estar vacía</string>
+    <string name="fab_agregar_reto">Agregar nuevo reto</string>
+    <string name="btn_editar_reto">Editar reto</string>
+    <string name="btn_eliminar_reto">Eliminar reto</string>
+    <string name="btn_ir_a_retos">Ver Retos</string>
 </resources>
