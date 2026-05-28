@@ -6,83 +6,95 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.MainActivity">
+    android:background="@drawable/wood_background_2"
+    tools:context=".MainActivity">
 
-    <!-- TOOLBAR PERSONALIZADA -->
     <LinearLayout
-        android:id="@+id/customToolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/toolbar_background"
+        android:id="@+id/topBar"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="8dp"
-        android:layout_margin="12dp"
+        android:background="@drawable/bg_topbar"
+        android:paddingHorizontal="20dp"
+        android:gravity="center"
+        android:layout_marginTop="35dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnCalificar"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_star"
-            app:tint="#FF6600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Calificar" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:src="@drawable/favorite_normal" />
 
-        <ImageButton
-            android:id="@+id/btnAudio"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_lock_silent_mode_off"
-            app:tint="#FF6600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Audio" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/volume_up" />
 
-        <ImageButton
-            android:id="@+id/btnInstrucciones"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_help"
-            app:tint="#FF6600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Instrucciones" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/controller"
+            />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/add"
+            />
 
-        <ImageButton
-            android:id="@+id/btnRetos"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_add"
-            app:tint="#FF6600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Retos" />
-
-        <ImageButton
-            android:id="@+id/btnCompartir"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_share"
-            app:tint="#FF6600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Compartir" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/share"
+            />
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="150dp"
-        android:layout_height="16dp"
-        android:text="HOME SCREEN LATER"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/bottleImage"
+        android:layout_width="306dp"
+        android:layout_height="307dp"
+        android:layout_marginTop="96dp"
+        android:rotation="-30"
+        android:src="@raw/bottle_3d"
+        app:layout_constraintBottom_toTopOf="@id/pressButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/pressButton"
+        android:layout_width="91dp"
+        android:layout_height="96dp"
+
+        android:layout_centerHorizontal="true"
+
+        app:layout_constraintBottom_toTopOf="@id/buttonText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/press_button" />
+
+    <!-- TEXTO -->
+    <TextView
+        android:id="@+id/buttonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Presióname"
+        android:textSize="18sp"
+        android:textColor="#222222"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnIrARetos"
