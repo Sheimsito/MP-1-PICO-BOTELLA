@@ -17,6 +17,7 @@ import com.lilbro.picobotella.data.db.AppDatabase
 import com.lilbro.picobotella.data.model.Reto
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.fragment.app.DialogFragment
 
 /**
  * Activity that displays and manages the list of challenges (retos).
@@ -89,27 +90,17 @@ class RetosActivity : AppCompatActivity() {
     }
 
     /**
-     * Displays a dialog to create a new challenge (stub for HU 7).
+     * Opens [AgregarRetoDialog] to create a new challenge (US 7.0).
+     *
+     * The dialog handles its own input validation and save-button state.
+     * Persists the new [Reto] to Room on confirmation.
      */
     private fun showAddDialog() {
-        val input = TextInputEditText(this)
-        input.hint = getString(R.string.hint_descripcion_reto)
-
-        AlertDialog.Builder(this)
-            .setTitle(R.string.title_agregar_reto)
-            .setView(input)
-            .setPositiveButton(R.string.btn_guardar) { _, _ ->
-                val texto = input.text?.toString()?.trim()
-                if (!texto.isNullOrEmpty()) {
-                    lifecycleScope.launch {
-                        database.retoDao().insert(Reto(descripcion = texto))
-                    }
-                } else {
-                    Toast.makeText(this, R.string.error_descripcion_vacia, Toast.LENGTH_SHORT).show()
-                }
+        AgregarRetoDialog { descripcion ->
+            lifecycleScope.launch {
+                database.retoDao().insert(Reto(descripcion = descripcion))
             }
-            .setNegativeButton(R.string.btn_cancelar, null)
-            .show()
+        }.show(supportFragmentManager, AgregarRetoDialog.TAG)
     }
 
     /**
