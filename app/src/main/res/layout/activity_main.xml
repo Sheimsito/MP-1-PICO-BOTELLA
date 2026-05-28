@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wood_background_2"
-    tools:context=".MainActivity">
+    tools:context=".ui.home.MainActivity">
 
     <LinearLayout
         android:id="@+id/topBar"
@@ -23,23 +23,27 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:id="@+id/btnCalificar"
             android:layout_width="50dp"
             android:layout_height="35dp"
             android:src="@drawable/favorite_normal" />
 
         <ImageView
+            android:id="@+id/btnAudio"
             android:layout_width="50dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
             android:src="@drawable/volume_up" />
 
         <ImageView
+            android:id="@+id/btnInstrucciones"
             android:layout_width="50dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
             android:src="@drawable/controller"
             />
         <ImageView
+            android:id="@+id/btnRetos"
             android:layout_width="50dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
@@ -47,6 +51,7 @@
             />
 
         <ImageView
+            android:id="@+id/btnCompartir"
             android:layout_width="50dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
@@ -96,14 +101,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnIrARetos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_ir_a_retos"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

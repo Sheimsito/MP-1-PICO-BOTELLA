@@ -5,7 +5,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.view.animation.AnimationUtils
-import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,87 +23,74 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Iniciar audio de fondo
-        mediaPlayer = MediaPlayer.create(this, R.raw.background_music).apply {
+        // Iniciar audio de fondo de forma segura
+        mediaPlayer = MediaPlayer.create(this, R.raw.background_music)
+        mediaPlayer?.apply {
             isLooping = true
             start()
         }
 
         val scaleClick = AnimationUtils.loadAnimation(this, R.anim.scale_click)
-        val btnAudio = findViewById<ImageButton>(R.id.btnAudio)
+        val btnAudio = findViewById<ImageView>(R.id.btnAudio)
 
-        // Calificar → Google Play (HU 4)
-        findViewById<ImageButton>(R.id.btnCalificar).setOnClickListener {
+        // Calificar
+        findViewById<ImageView>(R.id.btnCalificar).setOnClickListener {
             it.startAnimation(scaleClick)
-            startActivity(Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es")))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp"))
+            startActivity(intent)
         }
 
-        // Toggle audio ON/OFF (HU 3 - Criterio 3)
+        // Toggle Audio
         btnAudio.setOnClickListener {
             it.startAnimation(scaleClick)
             if (isAudioOn) {
                 mediaPlayer?.pause()
                 btnAudio.setImageResource(R.drawable.ic_volume_off)
-                isAudioOn = false
             } else {
                 mediaPlayer?.start()
                 btnAudio.setImageResource(R.drawable.ic_volume_on)
-                isAudioOn = true
             }
+            isAudioOn = !isAudioOn
         }
 
-        // Instrucciones (HU 5) — pendiente
-        findViewById<ImageButton>(R.id.btnInstrucciones).setOnClickListener {
+        findViewById<ImageView>(R.id.btnInstrucciones).setOnClickListener {
             it.startAnimation(scaleClick)
-            // startActivity(Intent(this, InstruccionesActivity::class.java))
         }
 
-        // Retos (HU 6)
-        findViewById<ImageButton>(R.id.btnRetos).setOnClickListener {
+        findViewById<ImageView>(R.id.btnRetos).setOnClickListener {
             it.startAnimation(scaleClick)
             startActivity(Intent(this, RetosActivity::class.java))
         }
 
-        // Compartir (HU 10)
-        findViewById<ImageButton>(R.id.btnCompartir).setOnClickListener {
+        findViewById<ImageView>(R.id.btnCompartir).setOnClickListener {
             it.startAnimation(scaleClick)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT,
-                    "App pico botella.\nSolo los valientes lo juegan !!\n" +
-                            "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es")
+                putExtra(Intent.EXTRA_TEXT, "¡Juega a Pico Botella!")
             }
-            startActivity(Intent.createChooser(shareIntent, "Compartir"))
-        }
-
-        findViewById<MaterialButton>(R.id.btnIrARetos).setOnClickListener {
-            startActivity(Intent(this, RetosActivity::class.java))
+            startActivity(Intent.createChooser(shareIntent, "Compartir con:"))
         }
     }
 
-    // Pausar audio cuando la app va al fondo
     override fun onPause() {
         super.onPause()
         if (isAudioOn) mediaPlayer?.pause()
     }
 
-    // Reanudar audio cuando la app vuelve
     override fun onResume() {
         super.onResume()
         if (isAudioOn) mediaPlayer?.start()
     }
 
-    // Liberar recursos cuando se destruye la activity
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
     }
