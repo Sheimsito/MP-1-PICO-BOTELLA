@@ -22,6 +22,9 @@
         <activity
             android:name=".ui.home.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.retos.RetosActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
