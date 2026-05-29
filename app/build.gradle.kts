@@ -46,6 +46,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.airbnb.android:lottie:6.4.0")
+    implementation("com.google.android.filament:filament-android:1.32.0")
+    implementation("com.google.android.filament:gltfio-android:1.32.0")
+    implementation("com.google.android.filament:filament-utils-android:1.32.0")
+
 
     // Room
     implementation(libs.androidx.room.runtime)
