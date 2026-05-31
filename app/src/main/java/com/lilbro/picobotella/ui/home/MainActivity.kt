@@ -19,12 +19,11 @@ import androidx.core.view.WindowInsetsCompat
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.filament.EntityManager
 import com.google.android.filament.LightManager
-import com.google.android.filament.Skybox
 import com.google.android.filament.View
 import com.google.android.filament.utils.ModelViewer
-import com.google.android.filament.utils.Utils
 import com.lilbro.picobotella.R
 import com.lilbro.picobotella.ui.retos.RetosActivity
+import com.lilbro.picobotella.utils.ModelCache
 import java.nio.ByteBuffer
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var modelViewer: ModelViewer
     private lateinit var choreographer: Choreographer
     private var defaultAngle = 0f
-    private val transformMatrix = FloatArray(16) // Matriz para guardar la escala original
+    private val transformMatrix = FloatArray(16) 
 
     private val frameCallback: Choreographer.FrameCallback = Choreographer.FrameCallback { nanos ->
         modelViewer.render(nanos)
@@ -44,9 +43,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Init Filament
-        Utils.init()
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -106,10 +102,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Setup Bottle (3D Model)
     private fun setupBottle() {
         val surfaceView = findViewById<SurfaceView>(R.id.bottleImage)
-
         modelViewer = ModelViewer(surfaceView)
         val engine = modelViewer.engine
         val scene = modelViewer.scene
@@ -121,16 +115,11 @@ class MainActivity : AppCompatActivity() {
         modelViewer.view.blendMode = View.BlendMode.TRANSLUCENT
         modelViewer.scene.skybox = null
 
-        modelViewer.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
-
         val options = modelViewer.renderer.clearOptions
         options.clear = true
         modelViewer.renderer.clearOptions = options
 
-
-
-
-        // Lights and skybox
+        // Luces
         val mainLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(1.0f, 1.0f, 1.0f)
@@ -139,7 +128,6 @@ class MainActivity : AppCompatActivity() {
             .castShadows(true)
             .build(engine, mainLight)
         scene.addEntity(mainLight)
-
 
         val fillLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
@@ -150,24 +138,26 @@ class MainActivity : AppCompatActivity() {
         scene.addEntity(fillLight)
 
         try {
-            // Here we load the 3D model from the assets folder
-            assets.open("models/bottle.glb").use { input ->
-                val buffer = ByteBuffer.wrap(input.readBytes())
-                modelViewer.loadModelGlb(buffer)
-                modelViewer.transformToUnitCube()
+            // HERE WE USE PRELOAD MODEL
+            val buffer = ModelCache.bottleBuffer ?: assets.open("models/bottle.glb").use { input ->
+                val bytes = input.readBytes()
+                val b = ByteBuffer.allocateDirect(bytes.size)
+                b.put(bytes)
+                b.flip()
+                b
+            }
+            
+            modelViewer.loadModelGlb(buffer)
+            modelViewer.transformToUnitCube()
 
-                // Save the original scale of the model
-                modelViewer.asset?.root?.let { root ->
-                    val tm = engine.transformManager
-                    tm.getTransform(tm.getInstance(root), transformMatrix)
-                }
+            modelViewer.asset?.root?.let { root ->
+                val tm = engine.transformManager
+                tm.getTransform(tm.getInstance(root), transformMatrix)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-
-
 
     private fun spinBottle() {
         val startAngle = defaultAngle
@@ -181,15 +171,11 @@ class MainActivity : AppCompatActivity() {
                 modelViewer.asset?.root?.let { root ->
                     val tm = modelViewer.engine.transformManager
                     val inst = tm.getInstance(root)
-
                     val rotationMatrix = FloatArray(16)
                     Matrix.setIdentityM(rotationMatrix, 0)
-                    // Giro tipo reloj (Eje Z)
                     Matrix.rotateM(rotationMatrix, 0, defaultAngle, 0f, 0f, 1f)
-
                     val finalMatrix = FloatArray(16)
                     Matrix.multiplyMM(finalMatrix, 0, rotationMatrix, 0, transformMatrix, 0)
-
                     tm.setTransform(inst, finalMatrix)
                 }
             }
