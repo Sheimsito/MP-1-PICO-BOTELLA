@@ -12,19 +12,22 @@ import android.view.SurfaceView
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.filament.EntityManager
 import com.google.android.filament.LightManager
-import com.google.android.filament.View
+import com.google.android.filament.View as FilamentView
 import com.google.android.filament.utils.ModelViewer
 import com.lilbro.picobotella.R
 import com.lilbro.picobotella.ui.retos.RetosActivity
 import com.lilbro.picobotella.utils.ModelCache
 import java.nio.ByteBuffer
+import kotlin.math.ceil
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var modelViewer: ModelViewer
     private lateinit var choreographer: Choreographer
     private var defaultAngle = 0f
-    private val transformMatrix = FloatArray(16) 
+    private val transformMatrix = FloatArray(16)
 
     private val frameCallback: Choreographer.FrameCallback = Choreographer.FrameCallback { nanos ->
         modelViewer.render(nanos)
@@ -50,7 +53,10 @@ class MainActivity : AppCompatActivity() {
         choreographer = Choreographer.getInstance()
         setupBottle()
 
-        findViewById<LottieAnimationView>(R.id.pressButton).setOnClickListener {
+        val pressButton = findViewById<LottieAnimationView>(R.id.pressButton)
+
+        pressButton.setOnClickListener {
+            pressButton.isEnabled = false
             spinBottle()
         }
 
@@ -112,14 +118,13 @@ class MainActivity : AppCompatActivity() {
         surfaceView.setBackgroundColor(Color.TRANSPARENT)
         surfaceView.holder.setFormat(PixelFormat.TRANSLUCENT)
 
-        modelViewer.view.blendMode = View.BlendMode.TRANSLUCENT
+        modelViewer.view.blendMode = FilamentView.BlendMode.TRANSLUCENT
         modelViewer.scene.skybox = null
 
         val options = modelViewer.renderer.clearOptions
         options.clear = true
         modelViewer.renderer.clearOptions = options
 
-        // Luces
         val mainLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(1.0f, 1.0f, 1.0f)
@@ -128,6 +133,7 @@ class MainActivity : AppCompatActivity() {
             .castShadows(true)
             .build(engine, mainLight)
         scene.addEntity(mainLight)
+
 
         val fillLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
@@ -146,9 +152,11 @@ class MainActivity : AppCompatActivity() {
                 b.flip()
                 b
             }
-            
+
+
             modelViewer.loadModelGlb(buffer)
             modelViewer.transformToUnitCube()
+
 
             modelViewer.asset?.root?.let { root ->
                 val tm = engine.transformManager
@@ -158,26 +166,44 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
     private fun spinBottle() {
+        val pressButton = findViewById<LottieAnimationView>(R.id.pressButton)
         val startAngle = defaultAngle
-        val finalAngle = startAngle + 1440f + (Math.random() * 360f).toFloat()
+
+        val direction = if (Math.random() < 0.5) 1f else -1f
+
+        val extraRotation = 1440f + (Math.random() * 360f).toFloat()
+
+        val finalAngle = startAngle + (direction * extraRotation)
+
+        val spinBottleSound = MediaPlayer.create(this, R.raw.bottle_spin)
+
+        spinBottleSound.start()
 
         ValueAnimator.ofFloat(startAngle, finalAngle).apply {
-            duration = 4000
+            duration = 5000
             interpolator = DecelerateInterpolator(1.5f)
+
             addUpdateListener { anim ->
                 defaultAngle = anim.animatedValue as Float
+
                 modelViewer.asset?.root?.let { root ->
                     val tm = modelViewer.engine.transformManager
                     val inst = tm.getInstance(root)
+
                     val rotationMatrix = FloatArray(16)
                     Matrix.setIdentityM(rotationMatrix, 0)
                     Matrix.rotateM(rotationMatrix, 0, defaultAngle, 0f, 0f, 1f)
+
                     val finalMatrix = FloatArray(16)
                     Matrix.multiplyMM(finalMatrix, 0, rotationMatrix, 0, transformMatrix, 0)
+
                     tm.setTransform(inst, finalMatrix)
                 }
+            }
+            doOnEnd {
+                pressButton.isEnabled = true
+                spinBottleSound.release()
             }
         }.start()
     }
@@ -186,16 +212,20 @@ class MainActivity : AppCompatActivity() {
         choreographer.removeFrameCallback(frameCallback)
         super.onPause()
         if (isAudioOn) mediaPlayer?.pause()
+        if (isAudioOn) mediaPlayer?.pause()
     }
 
     override fun onResume() {
         super.onResume()
+        if (isAudioOn) mediaPlayer?.start()
         if (isAudioOn) mediaPlayer?.start()
         choreographer.postFrameCallback(frameCallback)
     }
 
     override fun onDestroy() {
         mediaPlayer?.release()
+        mediaPlayer = null
+        choreographer.removeFrameCallback(frameCallback)
         mediaPlayer = null
         choreographer.removeFrameCallback(frameCallback)
         if (::modelViewer.isInitialized) {
