@@ -13,6 +13,7 @@
         android:theme="@style/Theme.PicoBotella">
         <activity
             android:name=".ui.splash.SplashScreen"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +22,7 @@
         </activity>
         <activity
             android:name=".ui.home.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".ui.retos.RetosActivity"
