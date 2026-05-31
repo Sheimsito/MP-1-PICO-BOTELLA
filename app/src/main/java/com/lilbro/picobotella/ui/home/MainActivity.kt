@@ -20,6 +20,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.android.filament.EntityManager
 import com.google.android.filament.LightManager
 import com.google.android.filament.Skybox
+import com.google.android.filament.View
 import com.google.android.filament.utils.ModelViewer
 import com.google.android.filament.utils.Utils
 import com.lilbro.picobotella.R
@@ -113,17 +114,21 @@ class MainActivity : AppCompatActivity() {
         val engine = modelViewer.engine
         val scene = modelViewer.scene
 
+        surfaceView.setZOrderOnTop(true)
+        surfaceView.setBackgroundColor(Color.TRANSPARENT)
+        surfaceView.holder.setFormat(PixelFormat.TRANSLUCENT)
+
+        modelViewer.view.blendMode = View.BlendMode.TRANSLUCENT
+        modelViewer.scene.skybox = null
+
         modelViewer.view.blendMode = com.google.android.filament.View.BlendMode.TRANSLUCENT
 
         val options = modelViewer.renderer.clearOptions
         options.clear = true
-        options.clearColor = floatArrayOf(
-            0.85f,
-            0.70f,
-            0.57f,
-            1f
-        )
         modelViewer.renderer.clearOptions = options
+
+
+
 
         // Lights and skybox
         val mainLight = EntityManager.get().create()
@@ -161,6 +166,9 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
+
+
     private fun spinBottle() {
         val startAngle = defaultAngle
         val finalAngle = startAngle + 1440f + (Math.random() * 360f).toFloat()
