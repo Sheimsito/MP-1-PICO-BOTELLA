@@ -60,19 +60,21 @@
 
     </LinearLayout>
 
-    <ImageView
+
+    <SurfaceView
         android:id="@+id/bottleImage"
-        android:layout_width="306dp"
-        android:layout_height="307dp"
+        android:layout_width="343dp"
+        android:layout_height="317dp"
         android:layout_marginTop="96dp"
-        android:rotation="-30"
+        android:background="@android:color/transparent"
+        android:rotation="0"
         android:src="@raw/bottle_3d"
         app:layout_constraintBottom_toTopOf="@id/pressButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.558"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBar"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.356" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/pressButton"
