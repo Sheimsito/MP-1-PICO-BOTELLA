@@ -28,8 +28,10 @@ import com.lilbro.picobotella.ui.retos.RetosActivity
 import com.lilbro.picobotella.utils.ModelCache
 import java.nio.ByteBuffer
 import kotlin.math.ceil
+import com.lilbro.picobotella.ui.instrucciones.InstruccionesFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    InstruccionesFragment.InstruccionesListener {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isAudioOn = true
@@ -98,6 +100,25 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, RetosActivity::class.java))
         }
 
+// HU 5.0 - Instrucciones: abrir como Fragment
+        findViewById<ImageView>(R.id.btnInstrucciones).setOnClickListener {
+            it.startAnimation(scaleClick)
+// Criterio 1: pausar audio si está ON
+            if (isAudioOn) mediaPlayer?.pause()
+
+            val fragment = InstruccionesFragment.newInstance(isAudioOn)
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                .replace(R.id.fragmentContainer, fragment, InstruccionesFragment.TAG)
+                .addToBackStack(InstruccionesFragment.TAG)
+                .commit()
+        }
+
         findViewById<ImageView>(R.id.btnCompartir).setOnClickListener {
             it.startAnimation(scaleClick)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -105,6 +126,28 @@ class MainActivity : AppCompatActivity() {
                 putExtra(Intent.EXTRA_TEXT, "¡Juega a Pico Botella!")
             }
             startActivity(Intent.createChooser(shareIntent, "Compartir con:"))
+        }
+    }
+
+    /**
+     * HU 5.0 - Criterio 3: restores background audio when instructions fragment closes.
+     */
+    override fun onInstruccionesClosed(restoreAudio: Boolean) {
+        if (restoreAudio) {
+            mediaPlayer?.start()
+        }
+    }
+
+    /**
+     * Delegates hardware back press to InstruccionesFragment if it is visible.
+     */
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentByTag(InstruccionesFragment.TAG)
+        if (fragment is InstruccionesFragment && fragment.isVisible) {
+            fragment.onBackPressed()
+        } else {
+            super.onBackPressed()
         }
     }
 
@@ -144,7 +187,7 @@ class MainActivity : AppCompatActivity() {
         scene.addEntity(fillLight)
 
         try {
-            // HERE WE USE PRELOAD MODEL
+// HERE WE USE PRELOAD MODEL
             val buffer = ModelCache.bottleBuffer ?: assets.open("models/bottle.glb").use { input ->
                 val bytes = input.readBytes()
                 val b = ByteBuffer.allocateDirect(bytes.size)
