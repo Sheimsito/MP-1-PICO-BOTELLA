@@ -10,13 +10,13 @@ import android.opengl.Matrix
 import android.os.Bundle
 import android.view.Choreographer
 import android.view.SurfaceView
-import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
@@ -27,29 +27,24 @@ import com.google.android.filament.LightManager
 import com.google.android.filament.View as FilamentView
 import com.google.android.filament.utils.ModelViewer
 import com.lilbro.picobotella.R
-import com.lilbro.picobotella.data.db.AppDatabase
-import com.lilbro.picobotella.data.repository.API
-import com.lilbro.picobotella.data.repository.PicoBotellaRepository
+import com.lilbro.picobotella.ui.instrucciones.InstruccionesFragment
 import com.lilbro.picobotella.ui.retos.RetosActivity
 import com.lilbro.picobotella.utils.ModelCache
 import java.nio.ByteBuffer
+import kotlin.math.ceil
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    InstruccionesFragment.InstruccionesListener {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isAudioOn = true
-    private var isFavorite = false
 
     private lateinit var modelViewer: ModelViewer
     private lateinit var choreographer: Choreographer
     private var defaultAngle = 0f
     private val transformMatrix = FloatArray(16)
 
-    private val viewModel: MainViewModel by viewModels {
-        val database = AppDatabase.getInstance(applicationContext)
-        val repository = PicoBotellaRepository(database.retoDao(), API.pokemonService)
-        MainViewModel.Factory(repository)
-    }
+    private lateinit var bottleView: SurfaceView
 
     private val frameCallback: Choreographer.FrameCallback = Choreographer.FrameCallback { nanos ->
         modelViewer.render(nanos)
@@ -58,14 +53,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         choreographer = Choreographer.getInstance()
         setupBottle()
-        setupObservers()
 
         val pressButton = findViewById<LottieAnimationView>(R.id.pressButton)
+
         pressButton.setOnClickListener {
             pressButton.isEnabled = false
             spinBottle()
@@ -85,37 +81,50 @@ class MainActivity : AppCompatActivity() {
 
         val scaleClick = AnimationUtils.loadAnimation(this, R.anim.scale_click)
         val btnAudio = findViewById<ImageView>(R.id.btnAudio)
-        val btnCalificar = findViewById<ImageView>(R.id.btnCalificar)
 
-        btnCalificar.setOnClickListener {
+        findViewById<ImageView>(R.id.btnCalificar).setOnClickListener {
             it.startAnimation(scaleClick)
-            isFavorite = !isFavorite
-            if (isFavorite) {
-                btnCalificar.setImageResource(R.drawable.favorite_active)
-            } else {
-                btnCalificar.setImageResource(R.drawable.favorite_normal)
-            }
-            startActivity(Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp"))
+            startActivity(intent)
         }
 
-        findViewById<ImageView>(R.id.btnAudio).setOnClickListener { view ->
-            view.startAnimation(scaleClick)
-            val btnAudio = view as ImageView
+        btnAudio.setOnClickListener {
+            it.startAnimation(scaleClick)
             if (isAudioOn) {
                 mediaPlayer?.pause()
-                btnAudio.setImageResource(R.drawable.volume_off)
-                isAudioOn = false
+                btnAudio.setImageResource(R.drawable.ic_volume_off)
             } else {
                 mediaPlayer?.start()
-                btnAudio.setImageResource(R.drawable.volume_up)
-                isAudioOn = true
+                btnAudio.setImageResource(R.drawable.ic_volume_on)
             }
+            isAudioOn = !isAudioOn
         }
 
         findViewById<ImageView>(R.id.btnRetos).setOnClickListener {
             it.startAnimation(scaleClick)
             startActivity(Intent(this, RetosActivity::class.java))
+        }
+
+        // HU 5.0 - Instrucciones: abrir como Fragment
+        findViewById<ImageView>(R.id.btnInstrucciones).setOnClickListener {
+            it.startAnimation(scaleClick)
+            // Criterio 1: pausar audio si está ON
+            if (isAudioOn) mediaPlayer?.pause()
+            // Ocultar botella y botón para que no se superpongan al fragment
+            bottleView.visibility = INVISIBLE
+            findViewById<LottieAnimationView>(R.id.pressButton).visibility = INVISIBLE
+
+            val fragment = InstruccionesFragment.newInstance(isAudioOn)
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                .replace(R.id.fragmentContainer, fragment, InstruccionesFragment.TAG)
+                .addToBackStack(InstruccionesFragment.TAG)
+                .commit()
         }
 
         findViewById<ImageView>(R.id.btnCompartir).setOnClickListener {
@@ -128,23 +137,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObservers() {
-        viewModel.challengeEvent.observe(this) { (imgUrl, challengeText) ->
-            val fragment = ChallengeFragment.newInstance(imgUrl, challengeText)
-            fragment.show(supportFragmentManager, "challenge")
+    /**
+     * HU 5.0 - Criterio 3: restores background audio when instructions fragment closes.
+     */
+    override fun onInstruccionesClosed(restoreAudio: Boolean) {
+        if (restoreAudio) {
+            mediaPlayer?.start()
         }
+        // Restaurar visibilidad de botella y botón al volver
+        bottleView.visibility = VISIBLE
+        findViewById<LottieAnimationView>(R.id.pressButton).visibility = VISIBLE
+    }
 
-        viewModel.errorEvent.observe(this) {
-            val fragment = ChallengeFragment.newInstance(
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-                "¡Vaya! Hubo un problema con la API, pero el reto es: Realiza un RecyclerView que liste una api de Pokemones"
-            )
-            fragment.show(supportFragmentManager, "challenge")
+    /**
+     * Delegates hardware back press to InstruccionesFragment if it is visible.
+     */
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentByTag(InstruccionesFragment.TAG)
+        if (fragment is InstruccionesFragment && fragment.isVisible) {
+            fragment.onBackPressed()
+        } else {
+            super.onBackPressed()
         }
     }
 
     private fun setupBottle() {
-        val surfaceView = findViewById<SurfaceView>(R.id.bottleImage)
+        bottleView = findViewById(R.id.bottleImage)
+        val surfaceView = bottleView
         modelViewer = ModelViewer(surfaceView)
         val engine = modelViewer.engine
         val scene = modelViewer.scene
@@ -169,7 +189,16 @@ class MainActivity : AppCompatActivity() {
             .build(engine, mainLight)
         scene.addEntity(mainLight)
 
+        val fillLight = EntityManager.get().create()
+        LightManager.Builder(LightManager.Type.DIRECTIONAL)
+            .color(1.0f, 0.95f, 0.85f)
+            .intensity(50_000f)
+            .direction(-0.5f, 1.0f, 0.5f)
+            .build(engine, fillLight)
+        scene.addEntity(fillLight)
+
         try {
+            // HERE WE USE PRELOAD MODEL
             val buffer = ModelCache.bottleBuffer ?: assets.open("models/bottle.glb").use { input ->
                 val bytes = input.readBytes()
                 val b = ByteBuffer.allocateDirect(bytes.size)
@@ -177,65 +206,74 @@ class MainActivity : AppCompatActivity() {
                 b.flip()
                 b
             }
+
             modelViewer.loadModelGlb(buffer)
             modelViewer.transformToUnitCube()
+
             modelViewer.asset?.root?.let { root ->
                 val tm = engine.transformManager
                 tm.getTransform(tm.getInstance(root), transformMatrix)
             }
-        } catch (e: Exception) { e.printStackTrace() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun spinBottle() {
         val pressButton = findViewById<LottieAnimationView>(R.id.pressButton)
-        val tvCountDown = findViewById<TextView>(R.id.tvCountDown)
         val startAngle = defaultAngle
-        val extraRotation = 1440f + (Math.random() * 360f).toFloat()
-        val finalAngle = startAngle + extraRotation
 
-        val durationMs = 5000L
+        val direction = if (Math.random() < 0.5) 1f else -1f
+        val extraRotation = 1440f + (Math.random() * 360f).toFloat()
+        val finalAngle = startAngle + (direction * extraRotation)
+
+        val spinBottleSound = MediaPlayer.create(this, R.raw.bottle_spin)
+        spinBottleSound.start()
 
         ValueAnimator.ofFloat(startAngle, finalAngle).apply {
-            duration = durationMs
+            duration = 5000
             interpolator = DecelerateInterpolator(1.5f)
 
             addUpdateListener { anim ->
                 defaultAngle = anim.animatedValue as Float
+
                 modelViewer.asset?.root?.let { root ->
                     val tm = modelViewer.engine.transformManager
                     val inst = tm.getInstance(root)
+
                     val rotationMatrix = FloatArray(16)
                     Matrix.setIdentityM(rotationMatrix, 0)
                     Matrix.rotateM(rotationMatrix, 0, defaultAngle, 0f, 0f, 1f)
+
                     val finalMatrix = FloatArray(16)
                     Matrix.multiplyMM(finalMatrix, 0, rotationMatrix, 0, transformMatrix, 0)
+
                     tm.setTransform(inst, finalMatrix)
                 }
             }
             doOnEnd {
                 pressButton.isEnabled = true
-                tvCountDown.visibility = View.GONE
-                showRandomChallenge()
+                spinBottleSound.release()
             }
         }.start()
-    }
-
-    private fun showRandomChallenge() {
-        viewModel.getRandomChallenge()
     }
 
     override fun onPause() {
         choreographer.removeFrameCallback(frameCallback)
         super.onPause()
+        if (isAudioOn) mediaPlayer?.pause()
     }
 
     override fun onResume() {
         super.onResume()
+        if (isAudioOn) mediaPlayer?.start()
         choreographer.postFrameCallback(frameCallback)
     }
 
     override fun onDestroy() {
         mediaPlayer?.release()
+        mediaPlayer = null
+        choreographer.removeFrameCallback(frameCallback)
         if (::modelViewer.isInitialized) {
             modelViewer.destroyModel()
             modelViewer.engine.destroy()
