@@ -68,13 +68,31 @@
         android:layout_marginTop="96dp"
         android:background="@android:color/transparent"
         android:rotation="0"
-        android:src="@raw/bottle_3d"
         app:layout_constraintBottom_toTopOf="@id/pressButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.558"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintVertical_bias="0.356" />
+
+    <TextView
+        android:id="@+id/tvCountDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textColor="#FFFFFF"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="10"
+        app:layout_constraintBottom_toBottomOf="@id/bottleImage"
+        app:layout_constraintEnd_toEndOf="@id/bottleImage"
+        app:layout_constraintStart_toStartOf="@id/bottleImage"
+        app:layout_constraintTop_toTopOf="@id/bottleImage"
+        tools:text="3"
+        tools:visibility="visible" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/pressButton"
