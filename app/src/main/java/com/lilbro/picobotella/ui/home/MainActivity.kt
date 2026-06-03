@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isAudioOn = true
+    private var isFavorite = false
 
     private lateinit var modelViewer: ModelViewer
     private lateinit var choreographer: Choreographer
@@ -83,10 +84,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         val scaleClick = AnimationUtils.loadAnimation(this, R.anim.scale_click)
-        
-        findViewById<ImageView>(R.id.btnCalificar).setOnClickListener {
+        val btnAudio = findViewById<ImageView>(R.id.btnAudio)
+        val btnCalificar = findViewById<ImageView>(R.id.btnCalificar)
+
+        btnCalificar.setOnClickListener {
             it.startAnimation(scaleClick)
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")))
+            isFavorite = !isFavorite
+            if (isFavorite) {
+                btnCalificar.setImageResource(R.drawable.favorite_active)
+            } else {
+                btnCalificar.setImageResource(R.drawable.favorite_normal)
+            }
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")))
         }
 
         findViewById<ImageView>(R.id.btnAudio).setOnClickListener { view ->
@@ -94,12 +104,13 @@ class MainActivity : AppCompatActivity() {
             val btnAudio = view as ImageView
             if (isAudioOn) {
                 mediaPlayer?.pause()
-                btnAudio.setImageResource(R.drawable.ic_volume_off)
+                btnAudio.setImageResource(R.drawable.volume_off)
+                isAudioOn = false
             } else {
                 mediaPlayer?.start()
-                btnAudio.setImageResource(R.drawable.ic_volume_on)
+                btnAudio.setImageResource(R.drawable.volume_up)
+                isAudioOn = true
             }
-            isAudioOn = !isAudioOn
         }
 
         findViewById<ImageView>(R.id.btnRetos).setOnClickListener {
@@ -190,7 +201,6 @@ class MainActivity : AppCompatActivity() {
 
             addUpdateListener { anim ->
                 defaultAngle = anim.animatedValue as Float
-
                 modelViewer.asset?.root?.let { root ->
                     val tm = modelViewer.engine.transformManager
                     val inst = tm.getInstance(root)
