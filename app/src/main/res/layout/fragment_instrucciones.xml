@@ -69,20 +69,19 @@
                 android:text="@string/instrucciones_desc_gana"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:lineSpacingMultiplier="1.4"
-                android:layout_marginBottom="36dp" />
-
-            <!-- Criterio 8: Animación de triunfo -->
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lottieWinAnimation"
-                android:layout_width="220dp"
-                android:layout_height="220dp"
-                android:layout_gravity="center_horizontal"
-                app:lottie_rawRes="@raw/win_animation"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true" />
+                android:lineSpacingMultiplier="1.4" />
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- Criterio 8: Animación de triunfo — fuera del ScrollView -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieWinAnimation"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_gravity="center_horizontal"
+        app:lottie_rawRes="@raw/win_animation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true" />
 
 </LinearLayout>
