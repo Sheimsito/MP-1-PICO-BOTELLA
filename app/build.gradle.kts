@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.ksp)
+    id("com.google.devtools.ksp") version libs.versions.ksp.get()
 }
 
 android {

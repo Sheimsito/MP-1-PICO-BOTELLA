@@ -27,12 +27,12 @@ import com.lilbro.picobotella.R
 import com.lilbro.picobotella.ui.retos.RetosActivity
 import com.lilbro.picobotella.utils.ModelCache
 import java.nio.ByteBuffer
-import kotlin.math.ceil
 
 class MainActivity : AppCompatActivity() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var isAudioOn = true
+    private var isFavorite = false
 
     private lateinit var modelViewer: ModelViewer
     private lateinit var choreographer: Choreographer
@@ -74,23 +74,31 @@ class MainActivity : AppCompatActivity() {
 
         val scaleClick = AnimationUtils.loadAnimation(this, R.anim.scale_click)
         val btnAudio = findViewById<ImageView>(R.id.btnAudio)
+        val btnCalificar = findViewById<ImageView>(R.id.btnCalificar)
 
-        findViewById<ImageView>(R.id.btnCalificar).setOnClickListener {
+        btnCalificar.setOnClickListener {
             it.startAnimation(scaleClick)
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp"))
-            startActivity(intent)
+            isFavorite = !isFavorite
+            if (isFavorite) {
+                btnCalificar.setImageResource(R.drawable.favorite_active)
+            } else {
+                btnCalificar.setImageResource(R.drawable.favorite_normal)
+            }
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id=com.nequi.MobileApp")))
         }
 
         btnAudio.setOnClickListener {
             it.startAnimation(scaleClick)
             if (isAudioOn) {
                 mediaPlayer?.pause()
-                btnAudio.setImageResource(R.drawable.ic_volume_off)
+                btnAudio.setImageResource(R.drawable.volume_off)
+                isAudioOn = false
             } else {
                 mediaPlayer?.start()
-                btnAudio.setImageResource(R.drawable.ic_volume_on)
+                btnAudio.setImageResource(R.drawable.volume_up)
+                isAudioOn = true
             }
-            isAudioOn = !isAudioOn
         }
 
         findViewById<ImageView>(R.id.btnRetos).setOnClickListener {
@@ -134,7 +142,6 @@ class MainActivity : AppCompatActivity() {
             .build(engine, mainLight)
         scene.addEntity(mainLight)
 
-
         val fillLight = EntityManager.get().create()
         LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(1.0f, 0.95f, 0.85f)
@@ -144,7 +151,6 @@ class MainActivity : AppCompatActivity() {
         scene.addEntity(fillLight)
 
         try {
-            // HERE WE USE PRELOAD MODEL
             val buffer = ModelCache.bottleBuffer ?: assets.open("models/bottle.glb").use { input ->
                 val bytes = input.readBytes()
                 val b = ByteBuffer.allocateDirect(bytes.size)
@@ -153,10 +159,8 @@ class MainActivity : AppCompatActivity() {
                 b
             }
 
-
             modelViewer.loadModelGlb(buffer)
             modelViewer.transformToUnitCube()
-
 
             modelViewer.asset?.root?.let { root ->
                 val tm = engine.transformManager
@@ -166,18 +170,14 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
     private fun spinBottle() {
         val pressButton = findViewById<LottieAnimationView>(R.id.pressButton)
         val startAngle = defaultAngle
-
         val direction = if (Math.random() < 0.5) 1f else -1f
-
         val extraRotation = 1440f + (Math.random() * 360f).toFloat()
-
         val finalAngle = startAngle + (direction * extraRotation)
-
         val spinBottleSound = MediaPlayer.create(this, R.raw.bottle_spin)
-
         spinBottleSound.start()
 
         ValueAnimator.ofFloat(startAngle, finalAngle).apply {
@@ -186,18 +186,14 @@ class MainActivity : AppCompatActivity() {
 
             addUpdateListener { anim ->
                 defaultAngle = anim.animatedValue as Float
-
                 modelViewer.asset?.root?.let { root ->
                     val tm = modelViewer.engine.transformManager
                     val inst = tm.getInstance(root)
-
                     val rotationMatrix = FloatArray(16)
                     Matrix.setIdentityM(rotationMatrix, 0)
                     Matrix.rotateM(rotationMatrix, 0, defaultAngle, 0f, 0f, 1f)
-
                     val finalMatrix = FloatArray(16)
                     Matrix.multiplyMM(finalMatrix, 0, rotationMatrix, 0, transformMatrix, 0)
-
                     tm.setTransform(inst, finalMatrix)
                 }
             }
@@ -212,20 +208,16 @@ class MainActivity : AppCompatActivity() {
         choreographer.removeFrameCallback(frameCallback)
         super.onPause()
         if (isAudioOn) mediaPlayer?.pause()
-        if (isAudioOn) mediaPlayer?.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        if (isAudioOn) mediaPlayer?.start()
         if (isAudioOn) mediaPlayer?.start()
         choreographer.postFrameCallback(frameCallback)
     }
 
     override fun onDestroy() {
         mediaPlayer?.release()
-        mediaPlayer = null
-        choreographer.removeFrameCallback(frameCallback)
         mediaPlayer = null
         choreographer.removeFrameCallback(frameCallback)
         if (::modelViewer.isInitialized) {
