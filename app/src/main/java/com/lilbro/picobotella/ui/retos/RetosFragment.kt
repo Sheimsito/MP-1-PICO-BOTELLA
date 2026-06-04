@@ -1,74 +1,79 @@
 package com.lilbro.picobotella.ui.retos
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.lilbro.picobotella.R
-import com.lilbro.picobotella.data.api.PokemonService
 import com.lilbro.picobotella.data.db.AppDatabase
 import com.lilbro.picobotella.data.model.Reto
 import com.lilbro.picobotella.data.repository.API
 import com.lilbro.picobotella.data.repository.PicoBotellaRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.lilbro.picobotella.ui.retos.RetosAdapter
 
-/**
- * Activity that displays and manages the list of challenges (retos).
- * Refactored to use MVVM with Repository.
- */
-class RetosActivity : AppCompatActivity() {
+
+class RetosFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var fabAgregar: FloatingActionButton
     private lateinit var adapter: RetosAdapter
 
     private val viewModel: RetosViewModel by viewModels {
-        val database = AppDatabase.getInstance(applicationContext)
+        val database = AppDatabase.getInstance(requireContext())
         val repository = PicoBotellaRepository(database.retoDao(), API.pokemonService)
         RetosViewModel.Factory(repository)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_retos)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_retos, container, false)
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.retosRoot)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
-        setupFab()
+        setupToolbar(view)
+        setupRecyclerView(view)
+        setupFab(view)
         observeRetos()
     }
 
-    private fun setupRecyclerView() {
+    private fun setupToolbar(view: View) {
+        val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbarRetos)
+        toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+    }
+
+    private fun setupRecyclerView(view: View) {
         adapter = RetosAdapter(
             onEditClick = { reto -> showEditDialog(reto) },
             onDeleteClick = { reto -> showDeleteConfirmation(reto) }
         )
-        recyclerView = findViewById(R.id.recyclerViewRetos)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView = view.findViewById(R.id.recyclerViewRetos)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
     }
 
-    private fun setupFab() {
-        fabAgregar = findViewById(R.id.fabAgregarReto)
-        fabAgregar.setOnClickListener {
+    private fun setupFab(view: View) {
+        view.findViewById<FloatingActionButton>(R.id.fabAgregarReto).setOnClickListener {
             showAddDialog()
         }
     }
@@ -86,14 +91,14 @@ class RetosActivity : AppCompatActivity() {
     private fun showAddDialog() {
         AgregarRetoDialog { descripcion ->
             viewModel.insert(Reto(descripcion = descripcion))
-        }.show(supportFragmentManager, AgregarRetoDialog.TAG)
+        }.show(parentFragmentManager, AgregarRetoDialog.TAG)
     }
 
     private fun showEditDialog(reto: Reto) {
-        val input = TextInputEditText(this)
+        val input = TextInputEditText(requireContext())
         input.setText(reto.descripcion)
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.title_editar_reto)
             .setView(input)
             .setPositiveButton(R.string.btn_guardar) { _, _ ->
@@ -101,7 +106,7 @@ class RetosActivity : AppCompatActivity() {
                 if (!texto.isNullOrEmpty()) {
                     viewModel.update(reto.copy(descripcion = texto))
                 } else {
-                    Toast.makeText(this, R.string.error_descripcion_vacia, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.error_descripcion_vacia, Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton(R.string.btn_cancelar, null)
@@ -109,7 +114,7 @@ class RetosActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmation(reto: Reto) {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.title_eliminar_reto)
             .setMessage(R.string.msg_confirmar_eliminar)
             .setPositiveButton(R.string.btn_eliminar) { _, _ ->

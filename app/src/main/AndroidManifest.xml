@@ -27,7 +27,8 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.retos.RetosActivity"
+            android:name=".ui.instrucciones.InstruccionesActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
     </application>
 

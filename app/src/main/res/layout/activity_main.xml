@@ -1,151 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/wood_background_2"
-        tools:context=".ui.home.MainActivity">
-
-        <LinearLayout
-            android:id="@+id/topBar"
-            android:layout_width="350dp"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:background="@drawable/bg_topbar"
-            android:paddingHorizontal="20dp"
-            android:gravity="center"
-            android:layout_marginTop="35dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:id="@+id/btnCalificar"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:src="@drawable/favorite_normal" />
-
-            <ImageView
-                android:id="@+id/btnAudio"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="16dp"
-                android:src="@drawable/volume_up" />
-
-            <ImageView
-                android:id="@+id/btnInstrucciones"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="16dp"
-                android:src="@drawable/controller" />
-
-            <ImageView
-                android:id="@+id/btnRetos"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="16dp"
-                android:src="@drawable/add" />
-
-            <ImageView
-                android:id="@+id/btnCompartir"
-                android:layout_width="50dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="16dp"
-                android:src="@drawable/share" />
-
-<<<<<<< HEAD
-    <SurfaceView
-        android:id="@+id/bottleImage"
-        android:layout_width="343dp"
-        android:layout_height="317dp"
-        android:layout_marginTop="96dp"
-        android:background="@android:color/transparent"
-        android:rotation="0"
-        app:layout_constraintBottom_toTopOf="@id/pressButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.558"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar"
-        app:layout_constraintVertical_bias="0.356" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/tvCountDown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:textColor="#FFFFFF"
-        android:textSize="80sp"
-        android:textStyle="bold"
-        android:shadowColor="#000000"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowRadius="10"
-        app:layout_constraintBottom_toBottomOf="@id/bottleImage"
-        app:layout_constraintEnd_toEndOf="@id/bottleImage"
-        app:layout_constraintStart_toStartOf="@id/bottleImage"
-        app:layout_constraintTop_toTopOf="@id/bottleImage"
-        tools:text="3"
-        tools:visibility="visible" />
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/pressButton"
-        android:layout_width="91dp"
-        android:layout_height="96dp"
-=======
-        </LinearLayout>
-
-        <SurfaceView
-            android:id="@+id/bottleImage"
-            android:layout_width="343dp"
-            android:layout_height="317dp"
-            android:layout_marginTop="96dp"
-            android:background="@android:color/transparent"
-            android:rotation="0"
-            android:src="@raw/bottle_3d"
-            app:layout_constraintBottom_toTopOf="@id/pressButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.558"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar"
-            app:layout_constraintVertical_bias="0.356" />
->>>>>>> Giankarlo
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/pressButton"
-            android:layout_width="91dp"
-            android:layout_height="96dp"
-            android:layout_centerHorizontal="true"
-            app:layout_constraintBottom_toTopOf="@id/buttonText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_rawRes="@raw/press_button" />
-
-        <TextView
-            android:id="@+id/buttonText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Presióname"
-            android:textSize="18sp"
-            android:textColor="#222222"
-            android:layout_marginBottom="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
