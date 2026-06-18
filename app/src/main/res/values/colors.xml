@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- HU 5.0 - Instrucciones -->
+    <color name="instrucciones_bg">#1E1E1E</color>
+    <color name="instrucciones_toolbar_bg">#2A2A2A</color>
 </resources>

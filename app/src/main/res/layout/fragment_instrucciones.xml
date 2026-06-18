@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/instrucciones_bg">
+
+    <!-- Criterio 3: Toolbar personalizada con título y flecha atrás -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarInstrucciones"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/instrucciones_toolbar_bg"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/white"
+        app:title="@string/instrucciones_toolbar_title"
+        app:titleTextColor="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="24dp">
+
+            <!-- Criterio 4: Título ¿Cómo se juega? -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_titulo_como"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Criterio 5: Descripción cómo se juega -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_desc_como"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.4"
+                android:layout_marginBottom="28dp" />
+
+            <!-- Criterio 6: Título ¿Quién gana? -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_titulo_gana"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Criterio 7: Descripción quién gana -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/instrucciones_desc_gana"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.4" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Criterio 8: Animación de triunfo — fuera del ScrollView -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieWinAnimation"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_gravity="center_horizontal"
+        app:lottie_rawRes="@raw/win_animation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true" />
+
+</LinearLayout>

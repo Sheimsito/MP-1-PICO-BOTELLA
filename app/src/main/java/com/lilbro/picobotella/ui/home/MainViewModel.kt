@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: PicoBotellaRepository) : ViewModel() {
 
-    private val _challengeEvent = MutableLiveData<Pair<String, String>>()
+    private val _challengeEvent = SingleLiveEvent<Pair<String, String>>()
     val challengeEvent: LiveData<Pair<String, String>> = _challengeEvent
 
-    private val _errorEvent = MutableLiveData<Unit>()
+    private val _errorEvent = SingleLiveEvent<Unit>()
     val errorEvent: LiveData<Unit> = _errorEvent
 
     fun getRandomChallenge() {
