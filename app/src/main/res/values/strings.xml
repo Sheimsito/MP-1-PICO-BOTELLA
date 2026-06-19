@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">Pico Botella</string>
 
+    <string name="login_title">pico botella</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_registrarse">Registrarse</string>
+    <string name="or_access_with">o accede con</string>
+    <string name="btn_google">Google</string>
+
     <!-- US 6.0 - Retos -->
     <string name="title_retos_screen">Retos</string>
     <string name="hint_descripcion_reto">Descripción del reto</string>
