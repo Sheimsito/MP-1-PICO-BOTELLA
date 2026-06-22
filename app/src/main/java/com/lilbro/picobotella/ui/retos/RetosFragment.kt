@@ -11,32 +11,24 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.lilbro.picobotella.R
-import com.lilbro.picobotella.data.db.AppDatabase
 import com.lilbro.picobotella.data.model.Reto
-import com.lilbro.picobotella.data.repository.API
-import com.lilbro.picobotella.data.repository.PicoBotellaRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.lilbro.picobotella.ui.retos.RetosAdapter
 
-
+@AndroidEntryPoint
 class RetosFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RetosAdapter
 
-    private val viewModel: RetosViewModel by viewModels {
-        val database = AppDatabase.getInstance(requireContext())
-        val repository = PicoBotellaRepository(database.retoDao(), API.pokemonService)
-        RetosViewModel.Factory(repository)
-    }
+    private val viewModel: RetosViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

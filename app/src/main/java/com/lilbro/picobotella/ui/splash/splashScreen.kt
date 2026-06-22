@@ -10,21 +10,26 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.filament.utils.Utils
 import com.lilbro.picobotella.R
+import com.lilbro.picobotella.data.local.ModelCache
 import com.lilbro.picobotella.ui.home.MainActivity
-import com.lilbro.picobotella.utils.ModelCache
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @SuppressLint("CustomSplashScreen")
-class SplashScreen : AppCompatActivity()
-{
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+@AndroidEntryPoint
+class SplashScreen : AppCompatActivity() {
+
+    @Inject
+    lateinit var modelCache: ModelCache
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash_screen)
 
-        // Initialize Filament as soon as possible
+        // Initialize Filament
         Utils.init()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -34,10 +39,9 @@ class SplashScreen : AppCompatActivity()
         }
 
         lifecycleScope.launch {
-            // Preload the 3D model in background
-            ModelCache.preloadModel(this@SplashScreen)
+            // Preload the 3D model using injected cache
+            modelCache.preloadModel(this@SplashScreen)
             
-            // Wait remaining time if needed (total 3 seconds instead of 5 to make it feel faster)
             delay(3000)
             
             val intent = Intent(this@SplashScreen, MainActivity::class.java)

@@ -1,10 +1,11 @@
-package com.lilbro.picobotella.data.repository
+package com.lilbro.picobotella.data.api
 
-import com.lilbro.picobotella.data.api.PokemonService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object API {
+
+// Implementation of RetrofitClient class to handle API calls ( Pokémon API )
+object RetrofitClient {
     private const val BASE_URL = "https://raw.githubusercontent.com/"
 
     private val retrofit by lazy {

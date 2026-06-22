@@ -1,16 +1,20 @@
 package com.lilbro.picobotella.ui.retos
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.lilbro.picobotella.data.model.Reto
 import com.lilbro.picobotella.data.repository.PicoBotellaRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RetosViewModel(private val repository: PicoBotellaRepository) : ViewModel() {
+@HiltViewModel
+class RetosViewModel @Inject constructor(
+    private val repository: PicoBotellaRepository
+) : ViewModel() {
 
     val allRetos: StateFlow<List<Reto>> = repository.getAllRetos()
         .stateIn(
@@ -29,15 +33,5 @@ class RetosViewModel(private val repository: PicoBotellaRepository) : ViewModel(
 
     fun delete(reto: Reto) = viewModelScope.launch {
         repository.deleteReto(reto)
-    }
-
-    class Factory(private val repository: PicoBotellaRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(RetosViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return RetosViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
     }
 }
