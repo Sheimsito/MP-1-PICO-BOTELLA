@@ -1,16 +1,19 @@
 package com.lilbro.picobotella.ui.home
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.lilbro.picobotella.data.model.Pokemon
 import com.lilbro.picobotella.data.repository.PicoBotellaRepository
+import com.lilbro.picobotella.utils.SingleLiveEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(private val repository: PicoBotellaRepository) : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: PicoBotellaRepository
+) : ViewModel() {
 
     private val _challengeEvent = SingleLiveEvent<Pair<String, String>>()
     val challengeEvent: LiveData<Pair<String, String>> = _challengeEvent
@@ -41,16 +44,6 @@ class MainViewModel(private val repository: PicoBotellaRepository) : ViewModel()
                 e.printStackTrace()
                 _errorEvent.value = Unit
             }
-        }
-    }
-
-    class Factory(private val repository: PicoBotellaRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return MainViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }

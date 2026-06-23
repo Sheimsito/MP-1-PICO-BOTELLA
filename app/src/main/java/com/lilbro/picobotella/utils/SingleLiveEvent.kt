@@ -1,4 +1,4 @@
-package com.lilbro.picobotella.ui.home
+package com.lilbro.picobotella.utils
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner

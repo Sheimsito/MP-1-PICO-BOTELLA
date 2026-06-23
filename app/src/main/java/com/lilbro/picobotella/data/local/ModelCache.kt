@@ -1,12 +1,17 @@
-package com.lilbro.picobotella.utils
+package com.lilbro.picobotella.data.local
 
 import android.content.Context
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object ModelCache {
+
+// Implementation of ModelCache class to handle model loading.
+@Singleton
+class ModelCache @Inject constructor() {
     var bottleBuffer: ByteBuffer? = null
 
     suspend fun preloadModel(context: Context) {
