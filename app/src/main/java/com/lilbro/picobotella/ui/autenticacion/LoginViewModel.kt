@@ -3,6 +3,9 @@ package com.lilbro.picobotella.ui.autenticacion
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.lilbro.picobotella.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -26,13 +29,19 @@ class LoginViewModel @Inject constructor(
                 if (task.isSuccessful) {
                     _loginState.value = LoginResult.Success
                 } else {
-                    _loginState.value = LoginResult.Error(task.exception?.message ?: "Error desconocido")
+                    val errorCode = when (task.exception) {
+                        is FirebaseAuthInvalidUserException -> "USER_NOT_FOUND"
+                        is FirebaseAuthInvalidCredentialsException -> "WRONG_PASSWORD"
+                        is FirebaseNetworkException -> "NETWORK_ERROR"
+                        else -> task.exception?.message ?: "UNKNOWN"
+                    }
+                    _loginState.value = LoginResult.Error(errorCode)
                 }
             }
     }
 
     sealed class LoginResult {
         object Success : LoginResult()
-        data class Error(val message: String) : LoginResult()
+        data class Error(val code: String) : LoginResult()
     }
 }

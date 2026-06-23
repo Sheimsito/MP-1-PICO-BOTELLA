@@ -3,6 +3,7 @@ package com.lilbro.picobotella.ui.autenticacion
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,35 +49,52 @@ class LoginFragment : Fragment() {
             when (result) {
                 is LoginViewModel.LoginResult.Success -> navigateToHome()
                 is LoginViewModel.LoginResult.Error -> {
-                    Toast.makeText(context, "Error: ${result.message}", Toast.LENGTH_LONG).show()
+                    val errorMessage = when (result.code) {
+                        "USER_NOT_FOUND" -> getString(R.string.error_user_not_found)
+                        "WRONG_PASSWORD" -> getString(R.string.error_wrong_password)
+                        "NETWORK_ERROR" -> getString(R.string.error_network)
+                        else -> getString(R.string.error_auth_failed) + ": " + result.code
+                    }
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
     private fun setupRealTimeValidation() {
-        binding.btnLogin.isEnabled = false
-
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateLoginButtonState()
+            }
+            override fun afterTextChanged(s: Editable?) {
                 val email = binding.tilEmail.editText?.text.toString().trim()
                 val password = binding.tilPassword.editText?.text.toString().trim()
 
-                binding.btnLogin.isEnabled = email.isNotEmpty() && password.isNotEmpty()
+                // Email validation
+                if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    binding.tilEmail.error = getString(R.string.error_email_invalid)
+                } else {
+                    binding.tilEmail.error = null
+                }
 
+                // Password validation (min 6 chars)
                 if (password.isNotEmpty() && password.length < 6) {
-                    binding.tilPassword.error = "Mínimo 6 dígitos"
+                    binding.tilPassword.error = getString(R.string.error_password_too_short)
                 } else {
                     binding.tilPassword.error = null
-                    binding.tilPassword.isErrorEnabled = false
                 }
             }
-            override fun afterTextChanged(s: Editable?) {}
         }
 
         binding.tilEmail.editText?.addTextChangedListener(watcher)
         binding.tilPassword.editText?.addTextChangedListener(watcher)
+    }
+
+    private fun updateLoginButtonState() {
+        val email = binding.tilEmail.editText?.text.toString().trim()
+        val password = binding.tilPassword.editText?.text.toString().trim()
+        binding.btnLogin.isEnabled = email.isNotEmpty() && password.isNotEmpty() && password.length >= 6
     }
 
     private fun setupButtons() {
@@ -84,26 +102,40 @@ class LoginFragment : Fragment() {
             val email = binding.tilEmail.editText?.text.toString().trim()
             val password = binding.tilPassword.editText?.text.toString().trim()
 
-            if (validateFields(email)) {
+            if (validateFields(email, password)) {
                 viewModel.login(email, password)
             }
         }
 
         binding.btnGoogle.setOnClickListener {
-            Toast.makeText(context, "TODO: Más tarde.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Próximamente", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun validateFields(email: String): Boolean {
+    private fun validateFields(email: String, password: String): Boolean {
+        var isValid = true
+
         if (email.isEmpty()) {
-            binding.tilEmail.error = "Ingresa tu email"
-            return false
-        } else if (email.length > 40) {
-            binding.tilEmail.error = "El email no puede tener más de 40 caracteres"
-            return false
+            binding.tilEmail.error = getString(R.string.error_email_empty)
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = getString(R.string.error_email_invalid)
+            isValid = false
+        } else {
+            binding.tilEmail.error = null
         }
-        binding.tilEmail.error = null
-        return true
+
+        if (password.isEmpty()) {
+            binding.tilPassword.error = getString(R.string.error_password_empty)
+            isValid = false
+        } else if (password.length < 6) {
+            binding.tilPassword.error = getString(R.string.error_password_too_short)
+            isValid = false
+        } else {
+            binding.tilPassword.error = null
+        }
+
+        return isValid
     }
 
     private fun setLoading(isLoading: Boolean) {
@@ -114,9 +146,7 @@ class LoginFragment : Fragment() {
         binding.tilPassword.isEnabled = !isLoading
         
         if (!isLoading) {
-            val email = binding.tilEmail.editText?.text.toString().trim()
-            val password = binding.tilPassword.editText?.text.toString().trim()
-            binding.btnLogin.isEnabled = email.isNotEmpty() && password.isNotEmpty()
+            updateLoginButtonState()
         }
     }
 
