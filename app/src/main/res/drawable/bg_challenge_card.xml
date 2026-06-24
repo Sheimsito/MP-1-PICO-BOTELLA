@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Criterio 1: Fondo negro degradado con transparencia sutil -->
+    <gradient
+        android:startColor="#E6000000"
+        android:endColor="#E62C2C2C"
+        android:angle="270" />
+    <!-- Criterio 1: Bordes redondeados de color blanco -->
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+    <corners android:radius="24dp" />
+</shape>
