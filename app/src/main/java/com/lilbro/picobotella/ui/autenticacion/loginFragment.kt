@@ -3,24 +3,33 @@ package com.lilbro.picobotella.ui.autenticacion
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.lilbro.picobotella.R
 import com.lilbro.picobotella.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  * Fragment for the login screen (HU 1.0).
  *
- * Handles real-time field validation, login button state management,
- * and navigation to [RegisterFragment] or HomeFragment on success.
+ * Handles real-time field validation, email/password login,
+ * Google Sign-In via Credential Manager, and navigation.
  */
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -29,6 +38,8 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: LoginViewModel by viewModels()
+
+    private val webClientId = "633148457442-d86j8duns1hb922n8cg398d32g4k8ld2.apps.googleusercontent.com"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +51,6 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRealTimeValidation()
         setupButtons()
         setupObservers()
@@ -59,6 +69,7 @@ class LoginFragment : Fragment() {
                         "USER_NOT_FOUND" -> getString(R.string.error_user_not_found)
                         "WRONG_PASSWORD" -> getString(R.string.error_wrong_password)
                         "NETWORK_ERROR" -> getString(R.string.error_network)
+                        "GOOGLE_ERROR" -> getString(R.string.error_google_signin)
                         else -> getString(R.string.error_auth_failed) + ": " + result.code
                     }
                     Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
@@ -76,13 +87,11 @@ class LoginFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 val email = binding.tilEmail.editText?.text.toString().trim()
                 val password = binding.tilPassword.editText?.text.toString().trim()
-
                 if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     binding.tilEmail.error = getString(R.string.error_email_invalid)
                 } else {
                     binding.tilEmail.error = null
                 }
-
                 if (password.isNotEmpty() && password.length < 6) {
                     binding.tilPassword.error = getString(R.string.error_password_too_short)
                 } else {
@@ -90,7 +99,6 @@ class LoginFragment : Fragment() {
                 }
             }
         }
-
         binding.tilEmail.editText?.addTextChangedListener(watcher)
         binding.tilPassword.editText?.addTextChangedListener(watcher)
     }
@@ -106,25 +114,73 @@ class LoginFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.tilEmail.editText?.text.toString().trim()
             val password = binding.tilPassword.editText?.text.toString().trim()
-
             if (validateFields(email, password)) {
                 viewModel.login(email, password)
             }
         }
 
+        // Google Sign-In via Credential Manager
         binding.btnGoogle.setOnClickListener {
-            Toast.makeText(context, "Próximamente", Toast.LENGTH_SHORT).show()
+            launchGoogleSignIn()
         }
 
-        // Navigates to RegisterFragment (HU 2.0)
+        // Navigate to RegisterFragment (HU 2.0)
         binding.tvRegistrarse.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_register)
         }
     }
 
+    /**
+     * Launches the Google Sign-In flow using Android Credential Manager.
+     *
+     * Retrieves a [GoogleIdTokenCredential] and forwards the ID token to [LoginViewModel].
+     */
+    private fun launchGoogleSignIn() {
+        val credentialManager = CredentialManager.create(requireContext())
+
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(webClientId)
+            .setAutoSelectEnabled(false)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        lifecycleScope.launch {
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = requireActivity()
+                )
+                val credential = result.credential
+                if (credential is CustomCredential &&
+                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+                ) {
+                    val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                    viewModel.loginWithGoogle(googleCredential.idToken)
+                } else {
+                    Toast.makeText(
+                        context,
+                        getString(R.string.error_google_signin),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: GetCredentialException) {
+                // Diagnóstico temporal — quitar una vez funcione
+                Log.e("GoogleSignIn", "Error: ${e.javaClass.simpleName} - ${e.message}", e)
+                Toast.makeText(
+                    context,
+                    "Google error: ${e.javaClass.simpleName}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
     private fun validateFields(email: String, password: String): Boolean {
         var isValid = true
-
         if (email.isEmpty()) {
             binding.tilEmail.error = getString(R.string.error_email_empty)
             isValid = false
@@ -134,7 +190,6 @@ class LoginFragment : Fragment() {
         } else {
             binding.tilEmail.error = null
         }
-
         if (password.isEmpty()) {
             binding.tilPassword.error = getString(R.string.error_password_empty)
             isValid = false
@@ -144,7 +199,6 @@ class LoginFragment : Fragment() {
         } else {
             binding.tilPassword.error = null
         }
-
         return isValid
     }
 
@@ -155,10 +209,7 @@ class LoginFragment : Fragment() {
         binding.tilEmail.isEnabled = !isLoading
         binding.tilPassword.isEnabled = !isLoading
         binding.tvRegistrarse.isEnabled = !isLoading
-
-        if (!isLoading) {
-            updateLoginButtonState()
-        }
+        if (!isLoading) updateLoginButtonState()
     }
 
     private fun navigateToHome() {
