@@ -25,12 +25,6 @@ import com.lilbro.picobotella.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-/**
- * Fragment for the login screen (HU 1.0).
- *
- * Handles real-time field validation, email/password login,
- * Google Sign-In via Credential Manager, and navigation.
- */
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
@@ -86,7 +80,7 @@ class LoginFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {
                 val email = binding.tilEmail.editText?.text.toString().trim()
-                val password = binding.tilPassword.editText?.text.toString().trim()
+                val password = binding.etPassword.text.toString().trim()
                 if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     binding.tilEmail.error = getString(R.string.error_email_invalid)
                 } else {
@@ -100,12 +94,12 @@ class LoginFragment : Fragment() {
             }
         }
         binding.tilEmail.editText?.addTextChangedListener(watcher)
-        binding.tilPassword.editText?.addTextChangedListener(watcher)
+        binding.etPassword.addTextChangedListener(watcher)
     }
 
     private fun updateLoginButtonState() {
         val email = binding.tilEmail.editText?.text.toString().trim()
-        val password = binding.tilPassword.editText?.text.toString().trim()
+        val password = binding.etPassword.text.toString().trim()
         binding.btnLogin.isEnabled =
             email.isNotEmpty() && password.isNotEmpty() && password.length >= 6
     }
@@ -113,28 +107,21 @@ class LoginFragment : Fragment() {
     private fun setupButtons() {
         binding.btnLogin.setOnClickListener {
             val email = binding.tilEmail.editText?.text.toString().trim()
-            val password = binding.tilPassword.editText?.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
             if (validateFields(email, password)) {
                 viewModel.login(email, password)
             }
         }
 
-        // Google Sign-In via Credential Manager
         binding.btnGoogle.setOnClickListener {
             launchGoogleSignIn()
         }
 
-        // Navigate to RegisterFragment (HU 2.0)
         binding.tvRegistrarse.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_register)
         }
     }
 
-    /**
-     * Launches the Google Sign-In flow using Android Credential Manager.
-     *
-     * Retrieves a [GoogleIdTokenCredential] and forwards the ID token to [LoginViewModel].
-     */
     private fun launchGoogleSignIn() {
         val credentialManager = CredentialManager.create(requireContext())
 
@@ -168,7 +155,6 @@ class LoginFragment : Fragment() {
                     ).show()
                 }
             } catch (e: GetCredentialException) {
-                // Diagnóstico temporal — quitar una vez funcione
                 Log.e("GoogleSignIn", "Error: ${e.javaClass.simpleName} - ${e.message}", e)
                 Toast.makeText(
                     context,
