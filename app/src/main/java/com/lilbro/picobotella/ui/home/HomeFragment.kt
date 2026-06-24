@@ -2,7 +2,6 @@ package com.lilbro.picobotella.ui.home
 
 import android.content.Intent
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,7 +59,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.background_music)
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.background_music_trabajepapi)
         mediaPlayer?.apply {
             isLooping = true
             start()
