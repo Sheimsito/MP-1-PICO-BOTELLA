@@ -16,6 +16,12 @@ import com.lilbro.picobotella.R
 import com.lilbro.picobotella.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Fragment for the login screen (HU 1.0).
+ *
+ * Handles real-time field validation, login button state management,
+ * and navigation to [RegisterFragment] or HomeFragment on success.
+ */
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
@@ -71,14 +77,12 @@ class LoginFragment : Fragment() {
                 val email = binding.tilEmail.editText?.text.toString().trim()
                 val password = binding.tilPassword.editText?.text.toString().trim()
 
-                // Email validation
                 if (email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     binding.tilEmail.error = getString(R.string.error_email_invalid)
                 } else {
                     binding.tilEmail.error = null
                 }
 
-                // Password validation (min 6 chars)
                 if (password.isNotEmpty() && password.length < 6) {
                     binding.tilPassword.error = getString(R.string.error_password_too_short)
                 } else {
@@ -94,7 +98,8 @@ class LoginFragment : Fragment() {
     private fun updateLoginButtonState() {
         val email = binding.tilEmail.editText?.text.toString().trim()
         val password = binding.tilPassword.editText?.text.toString().trim()
-        binding.btnLogin.isEnabled = email.isNotEmpty() && password.isNotEmpty() && password.length >= 6
+        binding.btnLogin.isEnabled =
+            email.isNotEmpty() && password.isNotEmpty() && password.length >= 6
     }
 
     private fun setupButtons() {
@@ -109,6 +114,11 @@ class LoginFragment : Fragment() {
 
         binding.btnGoogle.setOnClickListener {
             Toast.makeText(context, "Próximamente", Toast.LENGTH_SHORT).show()
+        }
+
+        // Navigates to RegisterFragment (HU 2.0)
+        binding.tvRegistrarse.setOnClickListener {
+            findNavController().navigate(R.id.action_login_to_register)
         }
     }
 
@@ -144,7 +154,8 @@ class LoginFragment : Fragment() {
         binding.btnGoogle.isEnabled = !isLoading
         binding.tilEmail.isEnabled = !isLoading
         binding.tilPassword.isEnabled = !isLoading
-        
+        binding.tvRegistrarse.isEnabled = !isLoading
+
         if (!isLoading) {
             updateLoginButtonState()
         }
