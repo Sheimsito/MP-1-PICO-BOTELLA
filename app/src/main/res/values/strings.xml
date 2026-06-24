@@ -54,4 +54,5 @@
     <string name="btn_registrar">Registrarse</string>
     <string name="link_ir_a_login">¿Ya tienes cuenta? Inicia sesión</string>
     <string name="error_registro">Error en el registro</string>
+    <string name="error_google_signin">No se pudo iniciar sesión con Google</string>
 </resources>

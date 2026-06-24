@@ -68,6 +68,30 @@ class LoginViewModel @Inject constructor(
                 }
             }
     }
+    /**
+     * Signs in the user using a Google ID token retrieved via Credential Manager.
+     *
+     * On success emits [LoginResult.Success]; on failure emits [LoginResult.Error]
+     * with code "NETWORK_ERROR" or "GOOGLE_ERROR".
+     *
+     * @param idToken The Google ID token string from the Credential Manager response.
+     */
+    fun loginWithGoogle(idToken: String) {
+        _isLoading.value = true
+        authRepository.loginWithGoogle(idToken)
+            .addOnCompleteListener { task ->
+                _isLoading.value = false
+                if (task.isSuccessful) {
+                    _loginState.value = LoginResult.Success
+                } else {
+                    val code = when (task.exception) {
+                        is com.google.firebase.FirebaseNetworkException -> "NETWORK_ERROR"
+                        else -> "GOOGLE_ERROR"
+                    }
+                    _loginState.value = LoginResult.Error(code)
+                }
+            }
+    }
 
     /**
      * Attempts to register a new user with the provided credentials.

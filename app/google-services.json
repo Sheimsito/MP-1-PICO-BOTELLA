@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "633148457442-jgic181449po2moq548d8v9931466q93.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lilbro.picobotella",
+            "certificate_hash": "c7c5b134a1a64a2fefc2128271fa1a2ef690a5e9"
+          }
+        },
+        {
           "client_id": "633148457442-m8m16lbb5gkmeoba5tqaaa94bb7di14g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
