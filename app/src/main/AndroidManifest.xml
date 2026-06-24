@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".PicoBotellaApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,6 +16,7 @@
         android:theme="@style/Theme.PicoBotella">
         <activity
             android:name=".ui.splash.SplashScreen"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,9 +25,11 @@
         </activity>
         <activity
             android:name=".ui.home.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.retos.RetosActivity"
+            android:name=".ui.instrucciones.InstruccionesActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
     </application>
 

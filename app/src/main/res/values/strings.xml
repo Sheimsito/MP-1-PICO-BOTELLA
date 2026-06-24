@@ -1,6 +1,31 @@
 <resources>
     <string name="app_name">Pico Botella</string>
 
+    <string name="login_title">pico botella</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="btn_login">Entrar</string>
+    <string name="btn_registrarse">Registrarse</string>
+    <string name="or_access_with">o accede con</string>
+    <string name="btn_google">Google</string>
+
+    <!-- Validaciones Login -->
+    <string name="error_email_empty">Ingresa tu email</string>
+    <string name="error_email_invalid">Formato de email no válido</string>
+    <string name="error_email_too_long">El email es demasiado largo</string>
+    <string name="error_password_empty">Ingresa tu contraseña</string>
+    <string name="error_password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+
+    <!-- Errores Firebase -->
+    <string name="error_auth_failed">Error de autenticación</string>
+    <string name="error_user_not_found">Usuario no encontrado</string>
+    <string name="error_wrong_password">Contraseña incorrecta</string>
+    <string name="error_invalid_email">El email ingresado no es válido</string>
+    <string name="error_user_disabled">Esta cuenta ha sido deshabilitada</string>
+    <string name="error_too_many_requests">Demasiados intentos. Intenta más tarde</string>
+    <string name="error_network">Error de conexión</string>
+    <string name="error_unknown">Ha ocurrido un error inesperado</string>
+
     <!-- US 6.0 - Retos -->
     <string name="title_retos_screen">Retos</string>
     <string name="hint_descripcion_reto">Descripción del reto</string>
@@ -16,4 +41,11 @@
     <string name="btn_editar_reto">Editar reto</string>
     <string name="btn_eliminar_reto">Eliminar reto</string>
     <string name="btn_ir_a_retos">Ver Retos</string>
+
+    <!-- HU 5.0 - Instrucciones -->
+    <string name="instrucciones_toolbar_title">Reglas del Juego</string>
+    <string name="instrucciones_titulo_como">¿Cómo se juega?</string>
+    <string name="instrucciones_desc_como">Los jugadores forman un círculo y en el centro colocan el dispositivo móvil, luego tocan el botón parpadeante para girar la botella. El jugador que señale la botella debe cumplir el reto que lanza la app, de lo contrario abandona el juego.</string>
+    <string name="instrucciones_titulo_gana">¿Quién gana?</string>
+    <string name="instrucciones_desc_gana">Gana el último jugador que no abandone el juego.</string>
 </resources>

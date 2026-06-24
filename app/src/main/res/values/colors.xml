@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_bg">#121212</color>
+    <color name="orange_main">#FF4500</color>
+    <color name="gray_text">#888888</color>
+
+    <!-- HU 5.0 - Instrucciones -->
+    <color name="instrucciones_bg">#1E1E1E</color>
+    <color name="instrucciones_toolbar_bg">#2A2A2A</color>
 </resources>

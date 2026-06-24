@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingTop="150dp"
+    android:paddingBottom="0dp">
+
+    <!-- Criterio 1: Cuadro de diálogo con fondo negro degradado y bordes blancos -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialogContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:background="@drawable/bg_challenge_card"
+        android:minHeight="200dp"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="60dp"
+        android:paddingBottom="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Criterio 3: Texto de color blanco (bold) con el reto -->
+        <TextView
+            android:id="@+id/tvChallenge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Realiza un RecyclerView que liste una api de Pokemones" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Criterio 2: Círculo superior con borde blanco y fondo negro -->
+    <View
+        android:id="@+id/circleBg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/circle_pokemon_bg"
+        app:layout_constraintBottom_toTopOf="@+id/dialogContainer"
+        app:layout_constraintEnd_toEndOf="@+id/dialogContainer"
+        app:layout_constraintStart_toStartOf="@+id/dialogContainer"
+        app:layout_constraintTop_toTopOf="@+id/dialogContainer" />
+
+    <ImageView
+        android:id="@+id/ivPokemon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@+id/circleBg"
+        app:layout_constraintEnd_toEndOf="@+id/circleBg"
+        app:layout_constraintStart_toStartOf="@+id/circleBg"
+        app:layout_constraintTop_toTopOf="@+id/circleBg"
+        tools:src="@tools:sample/avatars" />
+
+    <!-- Criterio 4: Botón naranja "Cerrar" (Mitad dentro, mitad fuera) -->
+    <Button
+        android:id="@+id/btnCerrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF6D00"
+        android:minWidth="160dp"
+        android:text="Cerrar"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dialogContainer"
+        app:layout_constraintEnd_toEndOf="@+id/dialogContainer"
+        app:layout_constraintStart_toStartOf="@+id/dialogContainer"
+        app:layout_constraintTop_toBottomOf="@+id/dialogContainer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
