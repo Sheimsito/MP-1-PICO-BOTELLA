@@ -6,6 +6,18 @@
     app:startDestination="@id/loginFragment">
 
     <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.lilbro.picobotella.ui.autenticacion.RegisterFragment"
+        android:label="RegisterFragment"
+        tools:layout="@layout/fragment_register">
+
+        <action
+            android:id="@+id/action_register_to_home"
+            app:destination="@id/homeFragment" />
+
+    </fragment>
+
+    <fragment
         android:id="@+id/loginFragment"
         android:name="com.lilbro.picobotella.ui.autenticacion.LoginFragment"
         android:label="LoginFragment"
@@ -15,6 +27,9 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
     </fragment>
 
     <fragment

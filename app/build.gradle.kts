@@ -44,6 +44,11 @@ android {
 }
 
 dependencies {
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
