@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.lilbro.picobotella.ui.autenticacion.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.lilbro.picobotella.ui.autenticacion.RegisterFragment"
+        android:label="RegisterFragment"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_register_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/homeFragment"
@@ -12,6 +38,14 @@
             android:id="@+id/action_home_to_retos"
             app:destination="@id/retosFragment"
             app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_home_to_instrucciones"
+            app:destination="@id/instruccionesFragment" />
+        <action
+            android:id="@+id/action_home_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -20,6 +54,18 @@
         android:label="RetosFragment">
         <action
             android:id="@+id/action_retos_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/instruccionesFragment"
+        android:name="com.lilbro.picobotella.ui.instrucciones.InstruccionesFragment"
+        android:label="InstruccionesFragment"
+        tools:layout="@layout/fragment_instrucciones">
+        <action
+            android:id="@+id/action_instrucciones_to_home"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />

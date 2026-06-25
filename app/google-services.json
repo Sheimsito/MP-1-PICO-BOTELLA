@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "633148457442",
+    "project_id": "pico-botella-jmgkm",
+    "storage_bucket": "pico-botella-jmgkm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633148457442:android:a988d6b555d5446cbc39bb",
+        "android_client_info": {
+          "package_name": "com.lilbro.picobotella"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633148457442-jgic181449po2moq548d8v9931466q93.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lilbro.picobotella",
+            "certificate_hash": "c7c5b134a1a64a2fefc2128271fa1a2ef690a5e9"
+          }
+        },
+        {
+          "client_id": "633148457442-m8m16lbb5gkmeoba5tqaaa94bb7di14g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lilbro.picobotella",
+            "certificate_hash": "a89b608b58c1e7e84e2ef96cd4ce2b1cb069cb9f"
+          }
+        },
+        {
+          "client_id": "633148457442-d86j8duns1hb922n8cg398d32g4k8ld2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMBJXkwqVniRzqIXpzr6IbX5zxA-dLatI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633148457442-d86j8duns1hb922n8cg398d32g4k8ld2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

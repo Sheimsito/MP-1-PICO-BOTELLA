@@ -9,39 +9,23 @@ import androidx.room.Update
 import com.lilbro.picobotella.data.model.Reto
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Data Access Object for [Reto] entities.
- */
 @Dao
 interface RetoDao {
-
-    /**
-     * Returns all challenges ordered by creation date descending (newest first).
-     */
     @Query("SELECT * FROM retos ORDER BY createdAt DESC")
     fun getAllRetos(): Flow<List<Reto>>
 
-    /**
-     * Inserts a new challenge, replacing on conflict.
-     *
-     * @param reto The challenge to insert.
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(reto: Reto)
+    @Query("SELECT * FROM retos ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRetoAleatorio(): Reto?
 
-    /**
-     * Updates an existing challenge.
-     *
-     * @param reto The challenge with updated values.
-     */
+    @Query("SELECT * FROM retos WHERE id = :id LIMIT 1")
+    suspend fun getRetoById(id: Int): Reto?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(reto: Reto): Long
+
     @Update
     suspend fun update(reto: Reto)
 
-    /**
-     * Deletes a challenge from the database.
-     *
-     * @param reto The challenge to delete.
-     */
     @Delete
     suspend fun delete(reto: Reto)
 }
