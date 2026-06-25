@@ -13,13 +13,17 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.lilbro.picobotella.R
-import com.lilbro.picobotella.data.db.AppDatabase
-import com.lilbro.picobotella.data.network.RetrofitClient
-import kotlinx.coroutines.Dispatchers
+import com.lilbro.picobotella.data.repository.PicoBotellaRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RetoAleatorioDialog : DialogFragment() {
+
+    @Inject
+    lateinit var repository: PicoBotellaRepository
 
     companion object {
         const val TAG = "RetoAleatorioDialog"
@@ -34,50 +38,36 @@ class RetoAleatorioDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Fondo transparente para que se vea el degradado personalizado
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        // Ocupa toda la pantalla para poder posicionar el círculo fuera del card
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
         val tvReto = view.findViewById<TextView>(R.id.tvRetoDescripcion)
         val ivPokemon = view.findViewById<ImageView>(R.id.ivPokemon)
         val btnCerrar = view.findViewById<MaterialButton>(R.id.btnCerrarReto)
 
-        // Criterio 6: solo cierra con el botón, NO con click fuera
         isCancelable = false
-
-        btnCerrar.setOnClickListener {
-            dismiss()
-        }
+        btnCerrar.setOnClickListener { dismiss() }
 
         cargarRetoYPokemon(tvReto, ivPokemon)
     }
 
     private fun cargarRetoYPokemon(tvReto: TextView, ivPokemon: ImageView) {
         lifecycleScope.launch {
-            // 1. Obtener reto aleatorio desde Room (BD local)
-            val reto = withContext(Dispatchers.IO) {
-                AppDatabase.getInstance(requireContext())
-                    .retoDao()
-                    .getRetoAleatorio()
-            }
-            tvReto.text = reto?.descripcion ?: "¡Sin retos disponibles! Agrega uno primero."
-
-            // 2. Obtener Pokémon aleatorio desde la API
             try {
-                val pokedex = withContext(Dispatchers.IO) {
-                    RetrofitClient.api.getPokedex()
-                }
+                // 1. Obtener reto aleatorio desde el repositorio
+                val retos = repository.getAllRetos().first()
+                val reto = if (retos.isNotEmpty()) retos.random() else null
+                tvReto.text = reto?.descripcion ?: "¡Sin retos disponibles! Agrega uno primero."
+
+                // 2. Obtener Pokémon aleatorio desde el repositorio (API unificada)
+                val pokedex = repository.getRandomPokemon()
                 val randomPokemon = pokedex.pokemon.random()
+                
                 Glide.with(this@RetoAleatorioDialog)
-                    .load(randomPokemon.img)
+                    .load(randomPokemon.img.replace("http://", "https://"))
                     .into(ivPokemon)
             } catch (e: Exception) {
-                // Si falla la red, el círculo queda vacío sin crashear
+                e.printStackTrace()
             }
         }
     }

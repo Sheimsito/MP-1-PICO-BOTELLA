@@ -14,7 +14,6 @@ interface RetoDao {
     @Query("SELECT * FROM retos ORDER BY createdAt DESC")
     fun getAllRetos(): Flow<List<Reto>>
 
-    // ← NUEVO para HU 12
     @Query("SELECT * FROM retos ORDER BY RANDOM() LIMIT 1")
     suspend fun getRetoAleatorio(): Reto?
 
@@ -22,7 +21,7 @@ interface RetoDao {
     suspend fun getRetoById(id: Int): Reto?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(reto: Reto)
+    suspend fun insert(reto: Reto): Long
 
     @Update
     suspend fun update(reto: Reto)

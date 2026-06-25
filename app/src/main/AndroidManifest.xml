@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".PicoBotellaApp"
@@ -15,6 +15,18 @@
         android:roundIcon="@mipmap/picobotella_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PicoBotella">
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
         <activity
             android:name=".ui.splash.SplashScreen"
             android:screenOrientation="portrait"
@@ -24,10 +36,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.home.MainActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
+
         <activity
             android:name=".ui.instrucciones.InstruccionesActivity"
             android:screenOrientation="portrait"
