@@ -114,6 +114,14 @@ class HomeFragment : Fragment() {
             startActivity(Intent.createChooser(shareIntent, "Compartir"))
         }
 
+        val btnLogout = view.findViewById<ImageView>(R.id.btnLogout)
+
+        btnLogout.setOnClickListener {  
+            it.startAnimation(scaleClick)
+            com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+            findNavController().navigate(R.id.action_home_to_login)
+        }
+
         view.findViewById<ImageView>(R.id.btnInstrucciones).setOnClickListener {
             it.startAnimation(scaleClick)
             startActivity(Intent(requireContext(), InstruccionesActivity::class.java))

@@ -1,6 +1,6 @@
 [versions]
 googleid = "1.1.1"
-agp = "8.7.3"
+agp = "8.13.2"
 filamentUtilsAndroid = "1.72.0"
 gltfioAndroid = "1.72.0"
 kotlin = "2.0.21"

@@ -49,6 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
+                    android:autofillHints="emailAddress"
                     android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,6 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberPassword"
+                    android:autofillHints="password"
                     android:maxLength="10"
                     android:textColor="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>

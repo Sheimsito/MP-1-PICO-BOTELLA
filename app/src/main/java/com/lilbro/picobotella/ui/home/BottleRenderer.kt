@@ -123,6 +123,6 @@ class BottleRenderer @Inject constructor(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        modelViewer.engine.destroy()
+        choreographer.removeFrameCallback(frameCallback)
     }
 }
